@@ -45,6 +45,18 @@ export const useAutoComplete = (
   const [error, setError] = useState<FetchError | undefined>();
   const [queryUrl, setQueryUrl] = useState<string>("");
 
+  // https://api.staging.entur.io/geocoder/v1/autocomplete
+  // ?text=namsos
+  // &lang=no
+  // &size=10
+  // &layers=venue
+  // &multiModal=parent
+  // &focus.point.lat=62.4722
+  // &focus.point.lon=6.1495
+  // &focus.weight=18
+  // &focus.scale=200km
+  // &focus.function=exp
+
   useEffect(() => {
     console.log("useAutoComplete");
     const timer = setTimeout(() => {
@@ -65,20 +77,26 @@ export const useAutoComplete = (
               focusLat && focusLon
                 ? `&focus.point.lat=${focusLat}&focus.point.lon=${focusLon}`
                 : "";
-            const layersParam = layers ? `&layers=${encodeURIComponent(layers)}` : "";
-            const sourcesParam = sources ? `&sources=${encodeURIComponent(sources)}` : "";
-            const multiModalParam = multiModal ? `&multiModal=${encodeURIComponent(multiModal)}` : "";
-            const url = `${baseUrl}/autocomplete?lang=no&size=${size}&text=${searchTerm}${focusParams}${layersParam}${sourcesParam}${multiModalParam}`;
+            const layersParam = layers
+              ? `&layers=${encodeURIComponent(layers)}`
+              : "";
+            const sourcesParam = sources
+              ? `&sources=${encodeURIComponent(sources)}`
+              : "";
+            const multiModalParam = multiModal
+              ? `&multiModal=${encodeURIComponent(multiModal)}`
+              : "";
+            const weight = `&focus.weight=18`;
+            const scale = `&focus.scale=200km`;
+            const fn = "&focus.function=exp";
+            const url = `${baseUrl}/autocomplete?lang=no&size=${size}&text=${searchTerm}${focusParams}${layersParam}${sourcesParam}${multiModalParam}${weight}${fn}${scale}`;
             setQueryUrl(url);
-            const response = await fetch(
-              url,
-              {
-                signal: controller.signal,
-                headers: {
-                  "ET-Client-Name": "entur-ror-bau",
-                },
+            const response = await fetch(url, {
+              signal: controller.signal,
+              headers: {
+                "ET-Client-Name": "entur-ror-bau",
               },
-            );
+            });
 
             clearTimeout(timeoutId);
 
@@ -134,7 +152,17 @@ export const useAutoComplete = (
       }
     }, 200);
     return () => clearTimeout(timer);
-  }, [searchTerm, version, environment, size, focusLat, focusLon, layers, sources, multiModal]);
+  }, [
+    searchTerm,
+    version,
+    environment,
+    size,
+    focusLat,
+    focusLon,
+    layers,
+    sources,
+    multiModal,
+  ]);
 
   return { searchResults, error, queryUrl };
 };
