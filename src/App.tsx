@@ -115,7 +115,9 @@ function App() {
       <GridItem small={12} className={styles.appHeader}>
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <img src={logo} className={styles.appLogo} alt="Entur logo" />
-          <Heading5 margin="none">Geocoder-v2 Test</Heading5>
+          <Heading5 margin="none">
+            Geocoder-v2 Test: Med OMS innstillinger
+          </Heading5>
         </div>
         <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
           <div style={{ display: "flex", gap: "0.5rem" }}>
